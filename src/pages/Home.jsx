@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import calendarCover from '../assets/images/products/calendar-2026-cover.png';
 import aboutPhoto from '../assets/images/varun.jpeg';
@@ -44,6 +44,7 @@ function Home() {
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
   const [_wheelDelta, setWheelDelta] = useState(0);
+  const intervalRef = useRef(null);
 
   // Minimum swipe distance (in px)
   const minSwipeDistance = 50;
@@ -72,12 +73,22 @@ function Home() {
     // Auto-rotate images every 5 seconds
     if (heroImages.length === 0) return;
 
-    const interval = setInterval(() => {
+    // Clear any existing interval
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+
+    // Set new interval
+    intervalRef.current = setInterval(() => {
       setCurrentImageIndex((prevIndex) => (prevIndex + 1) % heroImages.length);
     }, 5000);
 
-    return () => clearInterval(interval);
-  }, [heroImages]);
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [heroImages, currentImageIndex]); // Reset timer when currentImageIndex changes
 
   const goToSlide = (index) => {
     setCurrentImageIndex(index);
