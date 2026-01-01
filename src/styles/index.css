@@ -374,6 +374,9 @@ h6 {
   align-items: flex-end;
   justify-content: center;
   overflow: hidden;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: pan-y pinch-zoom;
 }
 
 .hero__background {
@@ -383,6 +386,7 @@ h6 {
   right: 0;
   bottom: 0;
   z-index: 0;
+  pointer-events: none;
 }
 
 .hero__image {
@@ -390,6 +394,8 @@ h6 {
   height: 100%;
   object-fit: cover;
   animation: fadeIn 1s ease-in-out;
+  pointer-events: none;
+  -webkit-user-drag: none;
 }
 
 @keyframes fadeIn {

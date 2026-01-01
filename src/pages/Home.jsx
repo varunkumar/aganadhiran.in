@@ -4,91 +4,69 @@ import calendarCover from '../assets/images/products/calendar-2026-cover.png';
 import aboutPhoto from '../assets/images/varun.jpeg';
 import { trackExploreCollectionClick, trackProductClick } from '../utils/analytics';
 
-// Import all hero images
-import bear from '../assets/images/hero/bear.jpg';
-import che from '../assets/images/hero/che.jpg';
-import ele from '../assets/images/hero/ele.jpg';
-import elephant from '../assets/images/hero/elephant.jpg';
-import flamingo1 from '../assets/images/hero/flamingo-1.jpg';
-import flamingo from '../assets/images/hero/flamingo.jpg';
-import gaur from '../assets/images/hero/gaur.jpg';
-import kite from '../assets/images/hero/kite.jpg';
-import leo1 from '../assets/images/hero/leo-1.jpg';
-import leo2 from '../assets/images/hero/leo-2.jpg';
-import leo3 from '../assets/images/hero/leo-3.jpg';
-import leo4 from '../assets/images/hero/leo-4.jpg';
-import leo5 from '../assets/images/hero/leo-5.jpg';
-import leo6 from '../assets/images/hero/leo-6.jpg';
-import leo7 from '../assets/images/hero/leo-7.jpg';
-import leo from '../assets/images/hero/leo.jpg';
-import mongoose from '../assets/images/hero/mongoose.jpg';
-import peacock1 from '../assets/images/hero/peacock-1.jpg';
-import peacock from '../assets/images/hero/peacock.jpg';
-import tiger1 from '../assets/images/hero/tiger-1.jpg';
-import tiger2 from '../assets/images/hero/tiger-2.jpg';
-import tiger3 from '../assets/images/hero/tiger-3.jpg';
-import tiger4 from '../assets/images/hero/tiger-4.jpg';
-import tiger5 from '../assets/images/hero/tiger-5.jpg';
-import tiger from '../assets/images/hero/tiger.jpg';
-
+// Hero images from public folder for lazy loading
 const baseHeroImages = [
-  tiger,
-  leo3,
-  flamingo,
-  elephant,
-  peacock,
-  leo,
-  tiger2,
-  gaur,
-  leo5,
-  kite,
-  tiger4,
-  mongoose,
-  leo1,
-  bear,
-  tiger5,
-  flamingo1,
-  leo7,
-  che,
-  peacock1,
-  tiger1,
-  leo2,
-  ele,
-  leo4,
-  tiger3,
-  leo6,
+  '/images/hero/tiger.jpg',
+  '/images/hero/leo-3.jpg',
+  '/images/hero/flamingo.jpg',
+  '/images/hero/elephant.jpg',
+  '/images/hero/peacock.jpg',
+  '/images/hero/leo.jpg',
+  '/images/hero/tiger-2.jpg',
+  '/images/hero/gaur.jpg',
+  '/images/hero/leo-5.jpg',
+  '/images/hero/kite.jpg',
+  '/images/hero/tiger-4.jpg',
+  '/images/hero/mongoose.jpg',
+  '/images/hero/bear.jpg',
+  '/images/hero/tiger-5.jpg',
+  '/images/hero/flamingo-1.jpg',
+  '/images/hero/leo-7.jpg',
+  '/images/hero/che.jpg',
+  '/images/hero/leo-2.jpg',
+  '/images/hero/ele.jpg',
+  '/images/hero/leo-4.jpg',
+  '/images/hero/tiger-3.jpg',
 ];
 
 function Home() {
-  const [heroImages, setHeroImages] = useState(baseHeroImages);
+  // Shuffle images immediately on mount (no delay)
+  const [heroImages] = useState(() => {
+    const shuffled = [...baseHeroImages];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  });
+
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
+  const [_wheelDelta, setWheelDelta] = useState(0);
+
+  // Minimum swipe distance (in px)
+  const minSwipeDistance = 50;
+  const wheelThreshold = 100; // Accumulated wheel delta threshold
 
   useEffect(() => {
     // Set page title
     document.title = 'Aganadhiram Creations | Wildlife Art & Photography';
-
-    // Preload all images
-    const imagePromises = baseHeroImages.map((src) => {
-      return new Promise((resolve, reject) => {
-        const img = new Image();
-        img.src = src;
-        img.onload = resolve;
-        img.onerror = reject;
-      });
-    });
-
-    Promise.all(imagePromises)
-      .then(() => {
-        // Shuffle images after loading
-        const shuffled = [...baseHeroImages];
-        for (let i = shuffled.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-        }
-        setHeroImages(shuffled);
-      })
-      .catch((err) => console.error('Error preloading images:', err));
   }, []);
+
+  // Preload adjacent images when index changes
+  useEffect(() => {
+    if (heroImages.length === 0) return;
+
+    const prevIndex = currentImageIndex === 0 ? heroImages.length - 1 : currentImageIndex - 1;
+    const nextIndex = (currentImageIndex + 1) % heroImages.length;
+
+    // Preload adjacent images in background
+    [prevIndex, nextIndex].forEach((idx) => {
+      const img = new Image();
+      img.src = heroImages[idx];
+    });
+  }, [currentImageIndex, heroImages]);
 
   useEffect(() => {
     // Auto-rotate images every 5 seconds
@@ -105,17 +83,102 @@ function Home() {
     setCurrentImageIndex(index);
   };
 
+  const goToNext = () => {
+    setCurrentImageIndex((prevIndex) => (prevIndex + 1) % heroImages.length);
+  };
+
+  const goToPrevious = () => {
+    setCurrentImageIndex((prevIndex) => (prevIndex === 0 ? heroImages.length - 1 : prevIndex - 1));
+  };
+
+  const onTouchStart = (e) => {
+    setTouchEnd(0); // Reset
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe) {
+      goToNext();
+    } else if (isRightSwipe) {
+      goToPrevious();
+    }
+  };
+
+  const onWheel = (e) => {
+    // Only respond to horizontal scrolling (Magic Mouse, trackpad)
+    if (Math.abs(e.deltaX) < Math.abs(e.deltaY)) return;
+
+    e.preventDefault();
+
+    setWheelDelta((prev) => {
+      const newDelta = prev + e.deltaX;
+
+      if (newDelta > wheelThreshold) {
+        goToNext();
+        return 0;
+      } else if (newDelta < -wheelThreshold) {
+        goToPrevious();
+        return 0;
+      }
+
+      return newDelta;
+    });
+
+    // Reset wheel delta after inactivity
+    setTimeout(() => setWheelDelta(0), 200);
+  };
+
   return (
     <>
       {/* Hero Section */}
-      <section className="hero">
+      <section
+        className="hero"
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+        onWheel={onWheel}
+      >
         <div className="hero__background">
-          <img
-            src={heroImages[currentImageIndex]}
-            alt="Majestic wildlife in natural habitat"
-            className="hero__image"
-            key={currentImageIndex}
-          />
+          {/* Render current, previous, and next images */}
+          {(() => {
+            const prevIndex =
+              currentImageIndex === 0 ? heroImages.length - 1 : currentImageIndex - 1;
+            const nextIndex = (currentImageIndex + 1) % heroImages.length;
+
+            return [
+              // Preload previous (hidden)
+              <img
+                key={`prev-${prevIndex}`}
+                src={heroImages[prevIndex]}
+                alt=""
+                style={{ display: 'none' }}
+              />,
+              // Current visible image
+              <img
+                key={`current-${currentImageIndex}`}
+                src={heroImages[currentImageIndex]}
+                alt="Majestic wildlife in natural habitat"
+                className="hero__image"
+              />,
+              // Preload next (hidden)
+              <img
+                key={`next-${nextIndex}`}
+                src={heroImages[nextIndex]}
+                alt=""
+                style={{ display: 'none' }}
+              />,
+            ];
+          })()}
         </div>
 
         {/* Bottom bar with content */}
