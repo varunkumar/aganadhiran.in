@@ -22,27 +22,20 @@ function ProductDetail() {
   useEffect(() => {
     document.title = 'Wildlife Desk Calendar 2026 | Aganadhiram Creations';
     trackProductView('wildlife-calendar-2026', 'Wildlife Desk Calendar 2026');
+
+    // Load RazorPay embed button script
+    const existingScript = document.getElementById('razorpay-embed-btn-js');
+    if (!existingScript) {
+      const script = document.createElement('script');
+      script.defer = true;
+      script.id = 'razorpay-embed-btn-js';
+      script.src = 'https://cdn.razorpay.com/static/embed_btn/bundle.js';
+      document.body.appendChild(script);
+    } else {
+      const rzp = window['__rzp__'];
+      if (rzp && rzp.init) rzp.init();
+    }
   }, []);
-
-  const emailSubject = encodeURIComponent('Order: Wildlife Desk Calendar 2026');
-  const emailBody = encodeURIComponent(
-    `Hi,
-
-I would like to order the Wildlife Desk Calendar 2026.
-
-Quantity: 1
-
-Please share the payment details.
-
-Shipping Address:
-[Your Name]
-[Address Line 1]
-[Address Line 2]
-[City, State, PIN]
-[Phone Number]
-
-Thank you!`
-  );
 
   return (
     <>
@@ -145,18 +138,19 @@ Thank you!`
                   <strong>Shipping:</strong> Free shipping. Dispatched within 2-3 business days
                 </p>
 
-                <a
-                  href={`mailto:hello@aganadhiran.in?subject=${emailSubject}&body=${emailBody}`}
-                  className="btn btn--primary btn--lg btn--full-width"
+                <div
+                  className="razorpay-embed-btn"
+                  data-url="https://pages.razorpay.com/pl_RyBCPMTidwzakY/view"
+                  data-text="Order Now - ₹560"
+                  data-color="#BA6118"
+                  data-size="large"
                   onClick={() =>
                     trackOrderClick('wildlife-calendar-2026', 'Wildlife Desk Calendar 2026', 560)
                   }
-                >
-                  Order Now - ₹560
-                </a>
+                ></div>
 
                 <p className="product-detail__payment-note">
-                  Contact us to place your order. Payment via UPI, Bank Transfer, or RazorPay.
+                  Secure payment via RazorPay. UPI, Cards, Net Banking accepted.
                 </p>
               </div>
             </div>
