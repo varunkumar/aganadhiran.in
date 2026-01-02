@@ -140,7 +140,7 @@ function ProductDetail() {
 
                 <div
                   className="razorpay-embed-btn"
-                  data-url="https://pages.razorpay.com/pl_RyBCPMTidwzakY/view"
+                  data-url="https://pages.razorpay.com/pl_Rz0dWKII9NYB2C/view"
                   data-text="Order Now - ₹590"
                   data-color="#BA6118"
                   data-size="large"
