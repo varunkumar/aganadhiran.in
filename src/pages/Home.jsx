@@ -289,7 +289,7 @@ function Home() {
               </ul>
 
               <p className="featured-product__price">
-                ₹560
+                ₹590
                 <span className="featured-product__price-note">(Incl. taxes & Shipping)</span>
               </p>
 

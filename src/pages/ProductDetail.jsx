@@ -76,7 +76,7 @@ function ProductDetail() {
             <div className="product-detail__info">
               <p className="product-detail__category">Desk Calendar</p>
               <h1 className="product-detail__title">Wildlife Desk Calendar 2026</h1>
-              <p className="product-detail__price">₹560</p>
+              <p className="product-detail__price">₹590</p>
 
               <p className="product-detail__description">
                 Welcome 2026 with the calm and strength of the wild. This Wildlife Desk Calendar
@@ -141,11 +141,11 @@ function ProductDetail() {
                 <div
                   className="razorpay-embed-btn"
                   data-url="https://pages.razorpay.com/pl_RyBCPMTidwzakY/view"
-                  data-text="Order Now - ₹560"
+                  data-text="Order Now - ₹590"
                   data-color="#BA6118"
                   data-size="large"
                   onClick={() =>
-                    trackOrderClick('wildlife-calendar-2026', 'Wildlife Desk Calendar 2026', 560)
+                    trackOrderClick('wildlife-calendar-2026', 'Wildlife Desk Calendar 2026', 590)
                   }
                 ></div>
 

@@ -66,7 +66,7 @@ function Products() {
                   month. Spiral bound tabletop design perfect for desks and workspaces.
                 </p>
                 <div className="product-card__footer">
-                  <span className="product-card__price">₹560</span>
+                  <span className="product-card__price">₹590</span>
                   <Link
                     to="/products/wildlife-calendar-2026"
                     className="product-card__link"

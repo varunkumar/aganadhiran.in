@@ -8,7 +8,7 @@ function Footer() {
           <div className="footer__brand">
             <p className="footer__logo">Aganadhiram Creations</p>
             <p className="footer__tagline">
-              Celebrating the untamed beauty of nature through wildlife photography and art.
+              Celebrating the untamed beauty of nature through wildlife art and photography.
               Designed and produced in India.
             </p>
           </div>
